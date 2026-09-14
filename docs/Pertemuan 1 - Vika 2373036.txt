@@ -1,0 +1,12 @@
+Minta mahasiswa menulis exit ticket:
+1. Lapisan mana yang paling saya pahami?
+Lapisan Data paling saya pahami adalah prosesnya dari ambil data mentah, bersihkan, siapkan jadi format yang bisa dipakai lapisan berikutnya. 
+Ini fondasi dari seluruh rantai kalau datanya berantakan, semua lapisan di atasnya (BI, ML, LLM) ikut kena dampak.
+
+2. Lapisan mana yang masih saya campuradukkan?
+Saya masih suka ketuker antara lapisan ML dan LLM. Awalnya saya kira keduanya sama-sama memprediksi, padahal bedanya jelas: ML mempelajari pola dari data untuk memprediksi target (misalnya angka atau kategori), sedangkan LLM tugasnya mengomunikasikan dan mengontekstualisasikan hasil itu jadi bahasa yang bisa dipahami manusia bukan yang bikin prediksi angkanya sendiri. 
+
+3. Bukti apa yang membuat sebuah sistem layak disebut “cerdas” dan bertanggung jawab?
+Bukan sekadar model canggih atau UI yang meyakinkan. Sistem layak disebut cerdas dan bertanggung jawab kalau tiap lapisannya bisa ditelusuri ada dari data mentah  - BI - ML - LLM  sampai ke keputusan akhir. 
+Kalau ada satu keputusan yang salah, saya (sebagai manusia di ujung rantai) harus bisa balik dan cek di lapisan mana masalahnya muncul. 
+
