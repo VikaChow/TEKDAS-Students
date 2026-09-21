@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="id" xml:lang="id"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Nama mahasiswa: ____________________">
+<meta name="dcterms.date" content="2026-09-21">
+
+<title>Prediksi Customer Churn Berbasis Business Intelligence, Machine Learning, dan LLM</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="laporan_proyek_churn_files/libs/clipboard/clipboard.min.js"></script>
+<script src="laporan_proyek_churn_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="laporan_proyek_churn_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="laporan_proyek_churn_files/libs/quarto-html/popper.min.js"></script>
+<script src="laporan_proyek_churn_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="laporan_proyek_churn_files/libs/quarto-html/anchor.min.js"></script>
+<link href="laporan_proyek_churn_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="laporan_proyek_churn_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="laporan_proyek_churn_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="laporan_proyek_churn_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="laporan_proyek_churn_files/libs/bootstrap/bootstrap-215b371544c282197b31c8aa00ce3677.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Daftar Isi</h2>
+   
+  <ul>
+  <li><a href="#abstrak" id="toc-abstrak" class="nav-link active" data-scroll-target="#abstrak">Abstrak</a></li>
+  <li><a href="#pendahuluan" id="toc-pendahuluan" class="nav-link" data-scroll-target="#pendahuluan"><span class="header-section-number">1</span> 1. Pendahuluan</a>
+  <ul class="collapse">
+  <li><a href="#latar-belakang" id="toc-latar-belakang" class="nav-link" data-scroll-target="#latar-belakang"><span class="header-section-number">1.1</span> 1.1 Latar belakang</a></li>
+  <li><a href="#pertanyaan-rekayasa" id="toc-pertanyaan-rekayasa" class="nav-link" data-scroll-target="#pertanyaan-rekayasa"><span class="header-section-number">1.2</span> 1.2 Pertanyaan rekayasa</a></li>
+  <li><a href="#kontribusi-dan-originalitas" id="toc-kontribusi-dan-originalitas" class="nav-link" data-scroll-target="#kontribusi-dan-originalitas"><span class="header-section-number">1.3</span> 1.3 Kontribusi dan originalitas</a></li>
+  </ul></li>
+  <li><a href="#data-dan-kualitas-data" id="toc-data-dan-kualitas-data" class="nav-link" data-scroll-target="#data-dan-kualitas-data"><span class="header-section-number">2</span> 2. Data dan kualitas data</a>
+  <ul class="collapse">
+  <li><a href="#sumber-dan-unit-observasi" id="toc-sumber-dan-unit-observasi" class="nav-link" data-scroll-target="#sumber-dan-unit-observasi"><span class="header-section-number">2.1</span> 2.1 Sumber dan unit observasi</a></li>
+  <li><a href="#fitur-dan-preprocessing" id="toc-fitur-dan-preprocessing" class="nav-link" data-scroll-target="#fitur-dan-preprocessing"><span class="header-section-number">2.2</span> 2.2 Fitur dan preprocessing</a></li>
+  <li><a href="#temuan-kualitas-data" id="toc-temuan-kualitas-data" class="nav-link" data-scroll-target="#temuan-kualitas-data"><span class="header-section-number">2.3</span> 2.3 Temuan kualitas data</a></li>
+  <li><a href="#etika-dan-privasi" id="toc-etika-dan-privasi" class="nav-link" data-scroll-target="#etika-dan-privasi"><span class="header-section-number">2.4</span> 2.4 Etika dan privasi</a></li>
+  </ul></li>
+  <li><a href="#metode" id="toc-metode" class="nav-link" data-scroll-target="#metode"><span class="header-section-number">3</span> 3. Metode</a>
+  <ul class="collapse">
+  <li><a href="#arsitektur-sistem" id="toc-arsitektur-sistem" class="nav-link" data-scroll-target="#arsitektur-sistem"><span class="header-section-number">3.1</span> 3.1 Arsitektur sistem</a></li>
+  <li><a href="#model-dan-baseline" id="toc-model-dan-baseline" class="nav-link" data-scroll-target="#model-dan-baseline"><span class="header-section-number">3.2</span> 3.2 Model dan baseline</a></li>
+  <li><a href="#metrik" id="toc-metrik" class="nav-link" data-scroll-target="#metrik"><span class="header-section-number">3.3</span> 3.3 Metrik</a></li>
+  <li><a href="#integrasi-llm" id="toc-integrasi-llm" class="nav-link" data-scroll-target="#integrasi-llm"><span class="header-section-number">3.4</span> 3.4 Integrasi LLM</a></li>
+  </ul></li>
+  <li><a href="#hasil" id="toc-hasil" class="nav-link" data-scroll-target="#hasil"><span class="header-section-number">4</span> 4. Hasil</a>
+  <ul class="collapse">
+  <li><a href="#kinerja-model" id="toc-kinerja-model" class="nav-link" data-scroll-target="#kinerja-model"><span class="header-section-number">4.1</span> 4.1 Kinerja model</a></li>
+  <li><a href="#confusion-matrix-pada-threshold-050" id="toc-confusion-matrix-pada-threshold-050" class="nav-link" data-scroll-target="#confusion-matrix-pada-threshold-050"><span class="header-section-number">4.2</span> 4.2 Confusion matrix pada threshold 0,50</a></li>
+  <li><a href="#analisis-threshold" id="toc-analisis-threshold" class="nav-link" data-scroll-target="#analisis-threshold"><span class="header-section-number">4.3</span> 4.3 Analisis threshold</a></li>
+  <li><a href="#faktor-global-model-dan-analisis-error" id="toc-faktor-global-model-dan-analisis-error" class="nav-link" data-scroll-target="#faktor-global-model-dan-analisis-error"><span class="header-section-number">4.4</span> 4.4 Faktor global model dan analisis error</a></li>
+  <li><a href="#evaluasi-llm" id="toc-evaluasi-llm" class="nav-link" data-scroll-target="#evaluasi-llm"><span class="header-section-number">4.5</span> 4.5 Evaluasi LLM</a></li>
+  </ul></li>
+  <li><a href="#diskusi" id="toc-diskusi" class="nav-link" data-scroll-target="#diskusi"><span class="header-section-number">5</span> 5. Diskusi</a></li>
+  <li><a href="#artefak-rekayasa-teknologi-cerdas" id="toc-artefak-rekayasa-teknologi-cerdas" class="nav-link" data-scroll-target="#artefak-rekayasa-teknologi-cerdas"><span class="header-section-number">6</span> 6. Artefak rekayasa teknologi cerdas</a></li>
+  <li><a href="#keterbatasan-dan-penggunaan-bertanggung-jawab" id="toc-keterbatasan-dan-penggunaan-bertanggung-jawab" class="nav-link" data-scroll-target="#keterbatasan-dan-penggunaan-bertanggung-jawab"><span class="header-section-number">7</span> 7. Keterbatasan dan penggunaan bertanggung jawab</a></li>
+  <li><a href="#kesimpulan" id="toc-kesimpulan" class="nav-link" data-scroll-target="#kesimpulan"><span class="header-section-number">8</span> 8. Kesimpulan</a></li>
+  <li><a href="#reproduksibilitas" id="toc-reproduksibilitas" class="nav-link" data-scroll-target="#reproduksibilitas"><span class="header-section-number">9</span> 9. Reproduksibilitas</a></li>
+  <li><a href="#pernyataan-penggunaan-ai" id="toc-pernyataan-penggunaan-ai" class="nav-link" data-scroll-target="#pernyataan-penggunaan-ai"><span class="header-section-number">10</span> 10. Pernyataan penggunaan AI</a></li>
+  <li><a href="#lampiran-lokasi-evidence" id="toc-lampiran-lokasi-evidence" class="nav-link" data-scroll-target="#lampiran-lokasi-evidence"><span class="header-section-number">11</span> Lampiran: lokasi evidence</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Format Lain</h2><ul><li><a href="laporan_proyek_churn.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Prediksi Customer Churn Berbasis Business Intelligence, Machine Learning, dan LLM</h1>
+<p class="subtitle lead">Laporan Proyek Teknologi Cerdas — Jalur Reproduce</p>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Penulis</div>
+  <div class="quarto-title-meta-heading">Afiliasi</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Nama mahasiswa: ____________________ </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Program Studi / Institusi: ____________________
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Diterbitkan</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">21 September 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="abstrak" class="level1 unnumbered">
+<h1 class="unnumbered">Abstrak</h1>
+<p>Customer churn menjadi masalah penting bagi bisnis e-commerce karena pelanggan yang berhenti bertransaksi dapat menurunkan pendapatan dan meningkatkan biaya akuisisi. Proyek ini membangun artefak pembelajaran end-to-end untuk menghubungkan data, business intelligence (BI), machine learning (ML), large language model (LLM), dan aplikasi Streamlit. Data terdiri atas 8.000 observasi pelanggan, 25.000 transaksi, 140 ringkasan produk, dan 75 ringkasan bulanan. Target klasifikasi adalah <code>churned</code> pada tingkat pelanggan, dengan prevalensi 8,94%. Pipeline menggunakan imputasi median/modus, one-hot encoding, dan Random Forest berparameter 350 pohon dengan pembobotan kelas seimbang. Evaluasi hold-out stratified 80/20 menghasilkan accuracy 0,863, precision churn 0,322, recall churn 0,483, F1 0,387, dan ROC-AUC 0,733. Walaupun accuracy lebih rendah daripada baseline mayoritas (0,911), model mampu menemukan 69 dari 143 pelanggan churn pada data uji; baseline tidak menemukan satu pun. LLM lokal digunakan hanya untuk menyusun rekomendasi retensi dari profil pelanggan, transaksi terbaru, probabilitas model, dan faktor global model. Hasil menunjukkan bahwa artefak ini berguna sebagai demonstrasi alur data-ke-keputusan, tetapi belum layak dipakai sebagai keputusan otomatis karena recall dan precision masih terbatas serta evaluasi LLM belum dilakukan pada pengguna nyata.</p>
+<p><strong>Kata kunci:</strong> customer churn; business intelligence; Random Forest; large language model; Streamlit.</p>
+</section>
+<section id="pendahuluan" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> 1. Pendahuluan</h1>
+<section id="latar-belakang" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="latar-belakang"><span class="header-section-number">1.1</span> 1.1 Latar belakang</h2>
+<p>Tim retensi memerlukan cara untuk mengenali pelanggan yang berpotensi berhenti bertransaksi sebelum pelanggan tersebut benar-benar hilang. Dashboard deskriptif dapat menunjukkan pendapatan dan transaksi, tetapi tidak secara langsung memberi prioritas pelanggan. Sebaliknya, skor ML dapat memprioritaskan pelanggan, namun perlu diterjemahkan dengan hati-hati menjadi tindakan bisnis yang dapat ditinjau manusia.</p>
+<p>Proyek ini mengimplementasikan alur <code>data → BI → ML → LLM → aplikasi</code> untuk kasus churn e-commerce. Fokusnya adalah reproducibility dan pemahaman batas setiap komponen, bukan klaim kausal atau otomasi penuh.</p>
+</section>
+<section id="pertanyaan-rekayasa" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="pertanyaan-rekayasa"><span class="header-section-number">1.2</span> 1.2 Pertanyaan rekayasa</h2>
+<ol type="1">
+<li>Seberapa baik Random Forest membedakan pelanggan churn dan tidak churn pada split uji yang tidak digunakan saat pelatihan?</li>
+<li>Bagaimana perubahan threshold memengaruhi trade-off pelanggan churn yang terdeteksi dengan false positive?</li>
+<li>Bagaimana LLM dapat menyusun rekomendasi yang tetap tertambat pada evidence yang diberikan?</li>
+</ol>
+</section>
+<section id="kontribusi-dan-originalitas" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="kontribusi-dan-originalitas"><span class="header-section-number">1.3</span> 1.3 Kontribusi dan originalitas</h2>
+<p><strong>Track: REPRODUCE.</strong> Kontribusi proyek adalah menjalankan dan mendokumentasikan pipeline referensi secara utuh: validasi empat tabel CSV, rekayasa fitur, klasifikasi churn, dashboard BI/ML, dan prompt LLM grounded. Tidak ada klaim bahwa dataset, arsitektur, atau model merupakan karya orisinal mahasiswa.</p>
+</section>
+</section>
+<section id="data-dan-kualitas-data" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> 2. Data dan kualitas data</h1>
+<section id="sumber-dan-unit-observasi" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="sumber-dan-unit-observasi"><span class="header-section-number">2.1</span> 2.1 Sumber dan unit observasi</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 23%">
+<col style="width: 30%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Berkas</th>
+<th>Unit observasi</th>
+<th style="text-align: right;">Jumlah</th>
+<th>Peran</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>customers.csv</code></td>
+<td>pelanggan</td>
+<td style="text-align: right;">8.000</td>
+<td>profil, fitur agregat, dan target <code>churned</code></td>
+</tr>
+<tr class="even">
+<td><code>orders.csv</code></td>
+<td>transaksi</td>
+<td style="text-align: right;">25.000</td>
+<td>riwayat pembelian, status, return, rating</td>
+</tr>
+<tr class="odd">
+<td><code>product_summary.csv</code></td>
+<td>produk</td>
+<td style="text-align: right;">140</td>
+<td>ringkasan performa produk</td>
+</tr>
+<tr class="even">
+<td><code>monthly_revenue.csv</code></td>
+<td>bulan</td>
+<td style="text-align: right;">75</td>
+<td>tren pendapatan delivered</td>
+</tr>
+</tbody>
+</table>
+<p>Dataset tersedia di folder <code>simulation/</code> sebagai dataset bergaya Kaggle untuk pembelajaran. Target biner <code>churned</code> berada pada tabel pelanggan. Snapshot data yang dipakai pipeline adalah 1 April 2026.</p>
+</section>
+<section id="fitur-dan-preprocessing" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="fitur-dan-preprocessing"><span class="header-section-number">2.2</span> 2.2 Fitur dan preprocessing</h2>
+<p>Tujuh fitur kategorikal adalah negara, gender, tier keanggotaan, kategori pilihan, perangkat pilihan, metode pembayaran, dan kanal akuisisi. Empat belas fitur numerik mencakup usia, jumlah dan nilai transaksi, recency, ulasan, return, wishlist, newsletter, serta empat fitur hasil rekayasa: <code>customer_tenure_days</code>, <code>orders_per_year</code>, <code>reviews_per_order</code>, dan <code>returns_per_order</code>.</p>
+<p>Tanggal registrasi diubah menjadi durasi pelanggan terhadap snapshot. Rasio order, ulasan, dan return dihitung dengan perlindungan terhadap pembagi nol. ID pelanggan dipertahankan untuk traceability, tetapi tidak dipakai sebagai fitur model. Data dibagi menjadi 6.400 baris train dan 1.600 baris test menggunakan stratified split 80/20, <code>random_state=42</code>.</p>
+</section>
+<section id="temuan-kualitas-data" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="temuan-kualitas-data"><span class="header-section-number">2.3</span> 2.3 Temuan kualitas data</h2>
+<p>Prevalensi churn sebesar 8,94%, sehingga kelas positif minoritas. Sebanyak 63,0% transaksi tidak memiliki <code>customer_rating</code>; pipeline model tidak menggunakan rating transaksi sebagai fitur langsung. Return rate pada <code>orders.csv</code> adalah 8,08%.</p>
+<p>Pemeriksaan rekonsiliasi mengonfirmasi bahwa ringkasan produk cocok dengan revenue order non-cancelled, sedangkan ringkasan bulanan cocok dengan revenue order berstatus <em>Delivered</em>, yaitu USD 2.585.126,50 dari 20.497 order. Kolom <code>return_rate</code> pada <code>monthly_revenue.csv</code> selalu nol; karena itu file tersebut tidak boleh digunakan untuk menyimpulkan bahwa tidak ada return. Analisis return harus mengacu pada <code>orders.csv</code>.</p>
+</section>
+<section id="etika-dan-privasi" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="etika-dan-privasi"><span class="header-section-number">2.4</span> 2.4 Etika dan privasi</h2>
+<p>Fitur seperti usia, gender, dan negara dapat menimbulkan risiko disparitas keputusan. Probabilitas churn adalah prediksi statistik, bukan bukti motif atau kelayakan pelanggan. Dalam penerapan nyata, akses data harus dibatasi, keputusan penawaran harus dapat ditinjau manusia, dan performa perlu diaudit per kelompok yang relevan. Proyek ini tidak melakukan pengujian fairness per kelompok maupun evaluasi persetujuan penggunaan data, sehingga tidak boleh dianggap sebagai sistem produksi.</p>
+</section>
+</section>
+<section id="metode" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> 3. Metode</h1>
+<section id="arsitektur-sistem" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="arsitektur-sistem"><span class="header-section-number">3.1</span> 3.1 Arsitektur sistem</h2>
+<pre class="text"><code>CSV pelanggan, order, produk, bulanan
+              │
+              ▼
+   validasi + cleaning + feature engineering
+              ├──────────────► BI pada Streamlit
+              ▼
+       train/test stratified
+              ▼
+  preprocessing pipeline + Random Forest
+              ▼
+ probabilitas churn dan feature importance
+              ├──────────────► dashboard ML
+              ▼
+ profil + transaksi + skor + faktor global
+              ▼
+      prompt grounded ke Ollama (LLM)
+              ▼
+  rekomendasi retensi untuk peninjauan manusia</code></pre>
+</section>
+<section id="model-dan-baseline" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="model-dan-baseline"><span class="header-section-number">3.2</span> 3.2 Model dan baseline</h2>
+<p>Pipeline Scikit-learn mengimputasi fitur numerik dengan median dan fitur kategorikal dengan modus, lalu menerapkan one-hot encoding dengan <code>handle_unknown="ignore"</code>. Seluruh transformasi di-fit hanya pada data train untuk menghindari leakage. Klasifier adalah <code>RandomForestClassifier</code> dengan <code>n_estimators=350</code>, <code>min_samples_leaf=3</code>, <code>class_weight="balanced"</code>, <code>random_state=42</code>, dan <code>n_jobs=-1</code>.</p>
+<p>Baseline adalah classifier mayoritas yang selalu memprediksi <em>tidak churn</em>. Karena churn jarang, baseline memiliki accuracy 0,911, tetapi precision, recall, dan F1 untuk kelas churn semuanya 0. Baseline ini menunjukkan mengapa accuracy saja tidak cukup.</p>
+</section>
+<section id="metrik" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="metrik"><span class="header-section-number">3.3</span> 3.3 Metrik</h2>
+<p>Precision mengukur proporsi alarm churn yang benar; recall mengukur proporsi pelanggan churn yang berhasil terdeteksi. F1 merangkum keduanya, sedangkan ROC-AUC mengevaluasi kemampuan ranking probabilitas lintas threshold. Confusion matrix digunakan untuk melihat false positive (FP) dan false negative (FN), karena dua error tersebut memiliki biaya operasional berbeda.</p>
+</section>
+<section id="integrasi-llm" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="integrasi-llm"><span class="header-section-number">3.4</span> 3.4 Integrasi LLM</h2>
+<p>Modul <code>vai_analyst.py</code> membangun prompt dalam Bahasa Indonesia untuk Ollama dengan model default <code>llama3.2</code> dan temperature 0,2. Evidence yang diberikan hanya berupa profil pelanggan terpilih, probabilitas churn, maksimal lima transaksi terbaru, dan delapan faktor global teratas. Prompt memerintahkan LLM untuk tidak membuat fakta, motif, keluhan, atau perilaku masa depan; juga menyatakan bahwa skor ML bukan sebab-akibat. LLM bertugas merangkum dan mengusulkan tindakan proporsional, bukan mengubah prediksi ML.</p>
+</section>
+</section>
+<section id="hasil" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> 4. Hasil</h1>
+<section id="kinerja-model" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="kinerja-model"><span class="header-section-number">4.1</span> 4.1 Kinerja model</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th style="text-align: right;">Accuracy</th>
+<th style="text-align: right;">Precision churn</th>
+<th style="text-align: right;">Recall churn</th>
+<th style="text-align: right;">F1 churn</th>
+<th style="text-align: right;">ROC-AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Baseline mayoritas</td>
+<td style="text-align: right;">0,911</td>
+<td style="text-align: right;">0,000</td>
+<td style="text-align: right;">0,000</td>
+<td style="text-align: right;">0,000</td>
+<td style="text-align: right;">0,500</td>
+</tr>
+<tr class="even">
+<td>Random Forest</td>
+<td style="text-align: right;">0,863</td>
+<td style="text-align: right;">0,322</td>
+<td style="text-align: right;">0,483</td>
+<td style="text-align: right;">0,387</td>
+<td style="text-align: right;">0,733</td>
+</tr>
+</tbody>
+</table>
+<p>Pada 1.600 data uji, terdapat 143 pelanggan churn (8,94%). Random Forest tidak mengungguli baseline pada accuracy, namun memiliki daya deteksi churn yang tidak dimiliki baseline. ROC-AUC 0,733 menunjukkan kemampuan pemeringkatan yang moderat, bukan tingkat kepastian individual.</p>
+</section>
+<section id="confusion-matrix-pada-threshold-050" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="confusion-matrix-pada-threshold-050"><span class="header-section-number">4.2</span> 4.2 Confusion matrix pada threshold 0,50</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Aktual &nbsp;Prediksi</th>
+<th style="text-align: right;">Tidak churn</th>
+<th style="text-align: right;">Churn</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Tidak churn</td>
+<td style="text-align: right;">1.312</td>
+<td style="text-align: right;">145</td>
+</tr>
+<tr class="even">
+<td>Churn</td>
+<td style="text-align: right;">74</td>
+<td style="text-align: right;">69</td>
+</tr>
+</tbody>
+</table>
+<p>Model mendeteksi 69 pelanggan churn dan melewatkan 74 pelanggan churn. Sebanyak 145 pelanggan yang tidak churn diberi alarm churn. Bila intervensi retensi mahal, false positive ini perlu dipertimbangkan; bila kehilangan pelanggan lebih mahal, recall dapat diprioritaskan melalui threshold yang lebih rendah.</p>
+</section>
+<section id="analisis-threshold" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="analisis-threshold"><span class="header-section-number">4.3</span> 4.3 Analisis threshold</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Threshold</th>
+<th style="text-align: right;">Precision</th>
+<th style="text-align: right;">Recall</th>
+<th style="text-align: right;">F1</th>
+<th style="text-align: right;">FP</th>
+<th style="text-align: right;">FN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0,30</td>
+<td style="text-align: right;">0,270</td>
+<td style="text-align: right;">0,601</td>
+<td style="text-align: right;">0,372</td>
+<td style="text-align: right;">233</td>
+<td style="text-align: right;">57</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0,50</td>
+<td style="text-align: right;">0,322</td>
+<td style="text-align: right;">0,483</td>
+<td style="text-align: right;">0,387</td>
+<td style="text-align: right;">145</td>
+<td style="text-align: right;">74</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0,70</td>
+<td style="text-align: right;">0,414</td>
+<td style="text-align: right;">0,084</td>
+<td style="text-align: right;">0,140</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">131</td>
+</tr>
+</tbody>
+</table>
+<p>Threshold 0,30 meningkatkan penangkapan churn menjadi 86 dari 143 kasus, tetapi menaikkan FP menjadi 233. Threshold 0,70 membuat alarm lebih presisi, tetapi hanya menangkap 12 churn. Threshold 0,50 memberikan F1 tertinggi dari tiga threshold yang diuji, tetapi threshold operasional seharusnya ditetapkan berdasarkan biaya penawaran retensi dan nilai pelanggan, bukan F1 saja.</p>
+</section>
+<section id="faktor-global-model-dan-analisis-error" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="faktor-global-model-dan-analisis-error"><span class="header-section-number">4.4</span> 4.4 Faktor global model dan analisis error</h2>
+<p>Fitur global paling penting adalah <code>days_since_last_purchase</code> (0,147), diikuti <code>total_orders</code> (0,089), <code>total_spend_usd</code> (0,077), <code>orders_per_year</code> (0,072), dan <code>customer_tenure_days</code> (0,062). Nilai ini menunjukkan kontribusi pada pemisahan prediksi di Random Forest, bukan pengaruh kausal.</p>
+<p>Pada threshold 0,50, 74 false negative menunjukkan bahwa sebagian pelanggan churn masih menerima probabilitas di bawah ambang dan berisiko tidak diprioritaskan. Sebaliknya, 145 false positive berisiko menerima insentif yang tidak diperlukan. Error tersebut konsisten dengan kelas churn yang minoritas dan feature set yang bersifat agregat: tidak tersedia sinyal langsung seperti keluhan, perubahan harga, atau interaksi layanan pelanggan. Pemeriksaan kasus individual harus dilakukan di dashboard dengan menghubungkan ID prediksi pada transaksi aktual, bukan menganggap feature importance sebagai penjelasan personal.</p>
+</section>
+<section id="evaluasi-llm" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="evaluasi-llm"><span class="header-section-number">4.5</span> 4.5 Evaluasi LLM</h2>
+<p>Implementasi telah menyediakan mekanisme grounding dan mode <code>--prompt-only</code>, tetapi tidak ada log keluaran Ollama atau set uji LLM tersimpan di repository. Oleh karena itu, belum dapat diklaim bahwa LLM bebas hallucination atau efektif bagi manajer. Sebelum penggunaan, keluaran minimal perlu dinilai terhadap empat kriteria: konsisten dengan evidence, tidak mengandung klaim tak didukung, tindakan relevan, dan menyebutkan keterbatasan prediksi.</p>
+</section>
+</section>
+<section id="diskusi" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> 5. Diskusi</h1>
+<p>Model belajar asosiasi antara sinyal agregat perilaku pelanggan—terutama recency dan aktivitas pembelian—dengan label churn historis. Ia bukan model kausal dan tidak menentukan alasan seorang pelanggan akan berhenti. Kekuatan utama solusi adalah pemisahan tanggung jawab: BI untuk deskripsi, ML untuk probabilitas, dan LLM untuk komunikasi yang dibatasi evidence.</p>
+<p>Kelemahan penting terlihat dari baseline mayoritas yang mempunyai accuracy lebih tinggi. Ini bukan kegagalan evaluasi; justru memperlihatkan mengapa keputusan bisnis harus memakai recall, precision, dan confusion matrix. Untuk kampanye berbiaya rendah, threshold 0,30 mungkin layak karena menangkap lebih banyak churn. Untuk kampanye mahal, threshold lebih tinggi atau prioritas berdasar nilai pelanggan mungkin lebih sesuai. Kedua keputusan membutuhkan estimasi biaya/manfaat yang belum tersedia pada dataset.</p>
+</section>
+<section id="artefak-rekayasa-teknologi-cerdas" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> 6. Artefak rekayasa teknologi cerdas</h1>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Elemen</th>
+<th>Implementasi dan bukti</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Kebutuhan</td>
+<td>Memprioritaskan pelanggan yang berpotensi churn untuk retensi.</td>
+</tr>
+<tr class="even">
+<td>Fungsi</td>
+<td>Menghasilkan probabilitas churn, menampilkan evidence BI, dan menyusun rekomendasi terbatas.</td>
+</tr>
+<tr class="odd">
+<td>Arsitektur</td>
+<td>CSV → preparation → pipeline Random Forest → Streamlit/Ollama.</td>
+</tr>
+<tr class="even">
+<td>Konstruksi</td>
+<td><code>data_prep.py</code>, <code>ml_model.py</code>, <code>app.py</code>, dan <code>vai_analyst.py</code>.</td>
+</tr>
+<tr class="odd">
+<td>Verifikasi</td>
+<td>Laporan kualitas data, split tetap, metrik test, confusion matrix, dan inspeksi prompt.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="keterbatasan-dan-penggunaan-bertanggung-jawab" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> 7. Keterbatasan dan penggunaan bertanggung jawab</h1>
+<ol type="1">
+<li>Data dan label historis tidak membuktikan sebab churn serta mungkin tidak merepresentasikan populasi produksi.</li>
+<li>Model belum diuji dengan cross-validation, kalibrasi probabilitas, data drift, atau biaya bisnis nyata.</li>
+<li>Evaluasi fairness per atribut sensitif belum tersedia.</li>
+<li>Feature importance bersifat global dan tidak dapat dijadikan penjelasan kausal untuk individu.</li>
+<li>LLM dapat tetap menghasilkan pernyataan tidak didukung; human review, logging, dan audit evidence harus wajib.</li>
+<li>Aplikasi bersifat demonstrasi pembelajaran, bukan sistem keputusan otomatis.</li>
+</ol>
+</section>
+<section id="kesimpulan" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> 8. Kesimpulan</h1>
+<ol type="1">
+<li>Pipeline berhasil menghubungkan empat tabel sumber ke dashboard BI, model churn, dan prompt LLM grounded.</li>
+<li>Pada test set 1.600 pelanggan, Random Forest mencapai ROC-AUC 0,733 dan F1 churn 0,387; pada threshold 0,50 model menemukan 69 dari 143 churn.</li>
+<li>Accuracy 0,863 lebih rendah daripada baseline mayoritas 0,911, sehingga accuracy tidak boleh digunakan sendirian untuk menilai sistem churn yang tidak seimbang.</li>
+<li>Threshold mengubah trade-off nyata: threshold 0,30 meningkatkan recall menjadi 0,601, sementara threshold 0,70 menurunkannya menjadi 0,084.</li>
+<li>LLM berguna sebagai lapisan komunikasi berbasis evidence, tetapi efektivitas dan keselamatannya belum tervalidasi pada keluaran nyata atau pengguna nyata.</li>
+</ol>
+</section>
+<section id="reproduksibilitas" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> 9. Reproduksibilitas</h1>
+<p>Gunakan Python 3.11+ dan dependensi pada <code>simulation/requirements.txt</code>. Jalankan dari folder <code>simulation/</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> data_prep.py</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> ml_model.py</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> vai_analyst.py <span class="at">--prompt-only</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">streamlit</span> run app.py</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Untuk mengaktifkan LLM lokal, jalankan <code>ollama serve</code>, unduh model <code>llama3.2</code>, lalu jalankan aplikasi. Hasil numerik laporan ini bersumber dari <code>data_quality_report.json</code>, <code>model_metrics.json</code>, <code>feature_importance.csv</code>, dan <code>customer_predictions.csv</code> yang ada pada repository.</p>
+</section>
+<section id="pernyataan-penggunaan-ai" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> 10. Pernyataan penggunaan AI</h1>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Aktivitas</th>
+<th>Tool/Model</th>
+<th>Penggunaan</th>
+<th>Verifikasi</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Penulisan draf laporan</td>
+<td>Codex</td>
+<td>Menyusun narasi dari artefak proyek</td>
+<td>Angka dicocokkan dengan JSON/CSV dan kode repository</td>
+</tr>
+<tr class="even">
+<td>Model prediksi</td>
+<td>Scikit-learn Random Forest</td>
+<td>Prediksi churn</td>
+<td>Evaluasi pada hold-out test set</td>
+</tr>
+<tr class="odd">
+<td>Rekomendasi bahasa</td>
+<td>Ollama <code>llama3.2</code></td>
+<td>Membuat saran dari evidence yang diberikan</td>
+<td>Perlu pemeriksaan manusia dan uji konsistensi evidence</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="lampiran-lokasi-evidence" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Lampiran: lokasi evidence</h1>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Evidence</th>
+<th>Lokasi</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Validasi data dan split</td>
+<td><code>simulation/data_prep.py</code>, <code>simulation/data_quality_report.json</code></td>
+</tr>
+<tr class="even">
+<td>Pipeline dan evaluasi</td>
+<td><code>simulation/ml_model.py</code>, <code>simulation/model_metrics.json</code></td>
+</tr>
+<tr class="odd">
+<td>Prediksi test dan threshold</td>
+<td><code>simulation/customer_predictions.csv</code></td>
+</tr>
+<tr class="even">
+<td>Faktor model</td>
+<td><code>simulation/feature_importance.csv</code></td>
+</tr>
+<tr class="odd">
+<td>Dashboard dan LLM</td>
+<td><code>simulation/app.py</code>, <code>simulation/vai_analyst.py</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Disalin!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Disalin!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
