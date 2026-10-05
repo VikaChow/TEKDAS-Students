@@ -1,0 +1,65 @@
+---
+title: "Laporan Diskusi Data E-commerce dan Persiapan Data"
+subtitle: "Ringkasan isi CSV dan dataset untuk machine learning"
+author: ""
+lang: id
+format:
+  pdf:
+    documentclass: article
+    papersize: a4
+    geometry: margin=2.2cm
+    colorlinks: true
+    toc: true
+    number-sections: true
+---
+
+# Pendahuluan
+
+Laporan ini merangkum pembahasan tentang empat berkas sumber di folder `simulation`, tiga berkas dataset pelanggan yang dihasilkan untuk latihan prediksi *customer churn*, serta alur persiapan data yang ada pada `simulation/data_prep.py`. Isi dan angka ukuran dataset dirangkum dari berkas yang tersedia di workspace.
+
+# Berkas sumber
+
+| Berkas | Isi | Kolom atau informasi utama |
+|---|---|---|
+| `customers.csv` | Profil pelanggan dan ringkasan perilaku belanja | ID, negara, usia, gender, tier keanggotaan, tanggal registrasi, jumlah pesanan, total/rata-rata belanja, kategori favorit, perangkat, pembayaran, ulasan, retur, dan label `churned` |
+| `orders.csv` | Rincian transaksi | ID pesanan dan pelanggan, tanggal, produk/kategori, harga, kuantitas, diskon, ongkir, pajak, total, metode pembayaran, status, retur, rating, serta aktivitas sesi |
+| `monthly_revenue.csv` | Agregat penjualan bulanan | Tahun, bulan, kuartal, jumlah pesanan, pendapatan, rata-rata nilai pesanan/diskon, tingkat retur, pelanggan unik, pelanggan baru |
+| `product_summary.csv` | Agregat performa per produk | Kategori, produk, jumlah pesanan, pendapatan, harga/rating rata-rata, tingkat retur, diskon, dan waktu pengiriman rata-rata |
+
+Secara ringkas, `customers.csv` menjawab siapa pelanggannya, `orders.csv` mencatat transaksi, `monthly_revenue.csv` merangkum penjualan per bulan, dan `product_summary.csv` merangkum performa produk.
+
+# Dataset untuk latihan churn
+
+`customer_ml_dataset.csv` memuat keseluruhan baris pelanggan yang sudah dipilih sebagai fitur model, fitur turunan, ID pelanggan, dan target `churned`. Dataset dibagi menjadi:
+
+| Berkas | Jumlah baris | Penggunaan |
+|---|---:|---|
+| `customer_train.csv` | 6.400 | Melatih model |
+| `customer_test.csv` | 1.600 | Mengukur kinerja pada data yang dipisahkan dari pelatihan |
+| `customer_ml_dataset.csv` | 8.000 | Dataset lengkap sebelum pembagian |
+
+Pembagian menggunakan rasio 80:20, `random_state=42`, serta stratifikasi berdasarkan `churned` agar proporsi kelas target serupa pada kedua bagian. Nama berkas yang benar adalah `customer_train.csv` (bukan `customer_traain.csv`).
+
+Dataset lengkap memiliki 23 kolom: `customer_id`, 7 fitur kategori, 14 fitur numerik, dan target `churned`. Fitur numeriknya mencakup umur, jumlah pesanan, total belanja, rata-rata nilai pesanan, jarak hari sejak transaksi terakhir, jumlah ulasan, skor ulasan, retur, wishlist, langganan newsletter, serta empat fitur rekayasa: `customer_tenure_days`, `orders_per_year`, `reviews_per_order`, dan `returns_per_order`. Fitur kategori mencakup negara, gender, tier, kategori favorit, perangkat, metode pembayaran favorit, dan kanal akuisisi.
+
+# Alur persiapan data
+
+Script `simulation/data_prep.py` menjalankan tahapan berikut:
+
+1. Membaca keempat CSV sumber dan memeriksa keberadaan kolom wajib.
+2. Mengubah kolom tanggal menjadi format tanggal dan menentukan tanggal snapshot dari tanggal terbaru yang tampak di pesanan atau registrasi.
+3. Membuat fitur masa pelanggan dalam hari, pesanan per tahun, ulasan per pesanan, dan retur per pesanan. Nilai rasio pesanan yang nol ditangani dengan hasil nol untuk rasio ulasan/retur.
+4. Mengonversi target `churned` menjadi bilangan bulat. Kolom kategori tetap berupa teks; encoding dilakukan di pipeline model.
+5. Membagi data pelanggan secara stratifikasi menjadi train dan test, lalu menyimpan dataset lengkap, train, test, dan laporan kualitas.
+
+# Ringkasan kualitas data yang tercatat
+
+Laporan kualitas yang tersedia mencatat 8.000 pelanggan, 25.000 pesanan, 140 baris ringkasan produk, dan 75 bulan ringkasan revenue. Tingkat churn pelanggan tercatat 8,94%, tingkat retur pesanan 8,08%, dan 63% nilai rating pelanggan pada pesanan kosong. Pendapatan dari pesanan berstatus `Delivered` tercatat USD 2.585.126,50.
+
+Ada catatan interpretasi penting: `monthly_revenue.csv` merangkum pendapatan pesanan berstatus `Delivered`, sehingga kolom `return_rate`-nya selalu nol. Untuk menganalisis retur gunakan `orders.csv`. Laporan kualitas juga mencatat bahwa jumlah revenue ringkasan produk cocok dengan revenue pesanan non-cancelled, dan jumlah revenue bulanan cocok dengan revenue pesanan delivered.
+
+# Catatan penggunaan
+
+Dataset ini disiapkan untuk latihan prediksi churn pelanggan e-commerce. File aktif lain dalam IDE, `Dropout/dataset.csv`, merupakan konteks dataset berbeda dan tidak termasuk dalam laporan persiapan ini. Bila tujuan analisis adalah prediksi dropout, kolom target dan alur pembersihannya perlu disusun khusus untuk dataset tersebut.
+
+Untuk menjalankan ulang persiapan data dari folder `simulation`, gunakan `python data_prep.py` dari direktori tersebut. Hasilnya mencakup `customer_ml_dataset.csv`, `customer_train.csv`, `customer_test.csv`, dan `data_quality_report.json`.
