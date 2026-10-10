@@ -1,0 +1,13 @@
+{
+  "rows": 4424,
+  "features": 34,
+  "target": "Target",
+  "target_distribution": {
+    "Graduate": 2209,
+    "Dropout": 1421,
+    "Enrolled": 794
+  },
+  "missing_values": {},
+  "train_rows": 3539,
+  "test_rows": 885
+}
